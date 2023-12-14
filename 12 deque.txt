@@ -1,111 +1,151 @@
 #include<iostream>
+#include<stdio.h>
+#define MAX 10
 using namespace std;
-#define size 5
-class dqueue{
-      int q[size];
-      int f,r;
-public :
-      dqueue(){
-            f=r=-1;
-            q[-1]=NULL;
-      }
 
-      void display(){
-            for(int i=f ; i<=r ; i++){
-                  cout<<"\n"<<q[i];
-            }
-      }
-      void insert_end(int data){
-            if(r==size-1){
-                  cout<<"\nNotpossibel";
-            }
-            else{
-            if(f==-1 && r==-1){
-                              f=r=0;
-                              q[r]=data;
-                        }
-                        else{
-                              r=r+1;
-                              q[r]=data;
-                        }
-
-                        display();
-                  }}
-      void delete_end()
-      {
-              if(f==-1)
-              {
-                  cout<<"deletion is not possible::dequeue is empty";
-                  return;
-              }
-              else
-              {
-                  cout<<"the deleted element is"<<q[r];
-                  if(f==r)
-                  {
-                      f=r=-1;
-                  }
-                  else
-                      r=r-1;
-              }
-              display();
-      }
-      void delete_front(){
-            if(f==-1)
-                    {
-                        cout<<"deletion is not possible::dequeue is empty";
-                        return;
-                    }
-                    else
-                    {
-                        cout<<"the deleted element is"<<q[f];
-                        if(f==r)
-                        {
-                            f=r=-1;
-                            return;
-                        }
-                        else
-                            f=f+1;
-                    }
-            display();
-
-      }
-      void insert_begin(int data){
-
-            if(f==-1 && r==-1){
-                  f=r=0;
-                  q[f]=data;
-            }
-
-            else if(f!=0){
-                  f=f-1;
-                  q[f]=data;
-            }
-            else
-                  cout<<"\nNot possible ";
-
-            display();
-      }
+struct que
+{
+    int arr[MAX];
+    int front,rear;
 };
-int main(){
-      int ch;
-      int data;
-      dqueue q;
-      do{
-            cout<<"\n1.Add at begin \n2.Add at end \n3.Delete front \n4.Delete end\n5.Exit";
-            cin>>ch;
-            switch(ch){
-            case 1 : cout<<"\nEnter data : ";
-                        cin>>data;
-                        q.insert_begin(data);
-                        break;
-            case 2 : cout<<"\nEnter data : ";
-                        cin>>data;
-                        q.insert_end(data);
-                        break;
-            case 3 :q.delete_front();break;
-            case 4 :q.delete_end();break;
-            }
-      }while(ch!=5);
-      return 0;
-} 
+
+void init(struct que *q)
+{
+    q->front=-1;
+    q->rear=-1;
+}
+
+void print(struct que q)
+{
+    int i;
+    i=q.front;
+    while(i!=q.rear)
+    {
+        cout<<"\t"<<q.arr[i];
+        i=(i+1)%MAX;
+    }
+    cout<<"\t"<<q.arr[q.rear];
+}
+
+int isempty(struct que q)
+{
+    return q.rear==-1?1:0;
+}
+
+int isfull(struct que q)
+{
+    return (q.rear+1)%MAX==q.front?1:0;
+}
+
+void addf(struct que *q,int data)
+{
+    if(isempty(*q))
+    {
+        q->front=q->rear=0;
+        q->arr[q->front]=data;
+    }
+    else
+    {
+        q->front=(q->front-1+MAX)%MAX;
+        q->arr[q->front]=data;
+    }
+}
+
+void addr(struct que *q,int data)
+{
+    if(isempty(*q))
+    {
+        q->front=q->rear=0;
+        q->arr[q->rear]=data;
+    }
+    else
+    {
+        q->rear=(q->rear+1)%MAX;
+        q->arr[q->rear]=data;
+    }
+}
+
+int delf(struct que *q)
+{
+    int data1;
+    data1=q->arr[q->front];
+    if(q->front==q->rear)
+        init(q);
+    else
+        q->front=(q->front+1)%MAX;
+    return data1;
+}
+
+int delr(struct que *q)
+{
+    int data1;
+    data1=q->arr[q->rear];
+    if(q->front==q->rear)
+        init(q);
+    else
+        q->rear=(q->rear-1+MAX)%MAX;
+    return data1;
+}
+
+int main()
+{
+    struct que q;
+    int data,ch;
+    init(&q);
+    while(ch!=6)
+    {
+        cout<<"\t\n1.Insert front"
+                "\t\n2.Insert rear"
+                "\t\n3.Delete front"
+                "\t\n4.Delete rear"
+                "\t\n5.Print"
+                "\t\n6.Exit";
+         cout<<"\nEnter your choice : ";
+        cin>>ch;
+        switch(ch)
+        {
+           case 1:
+              cout<<"\nEnter data to insert front : ";
+              cin>>data;
+              addf(&q,data);
+              break;
+
+           case 2:
+               cout<<"\nEnter the data to insert rear : ";
+               cin>>data;
+               addr(&q,data);
+               break;
+
+           case 3:
+               if(isempty(q))
+                   cout<<"\nDequeue is empty!!!";
+               else
+               {
+                   data=delf(&q);
+                   cout<<"\nDeleted data is : "<<data;
+               }
+               break;
+
+           case 4:
+               if(isempty(q))
+                   cout<<"\nDequeue is empty!!!";
+               else
+               {
+                   data=delr(&q);
+                   cout<<"\nDeleted data is : "<<data;
+               }
+               break;
+
+           case 5:
+                if(isempty(q))
+                    cout<<"\nDequeue is empty!!!";
+                else
+                {
+                    cout<<"\nDequeue elements are : ";
+                    print(q);
+                }
+                break;
+        }
+    }
+    return 0;
+}
